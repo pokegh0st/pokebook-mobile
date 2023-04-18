@@ -1,0 +1,7 @@
+{
+  "name": "PokeBook",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}

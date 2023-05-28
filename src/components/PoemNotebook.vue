@@ -1,7 +1,48 @@
 <template>
-    <ion-input class="top"></ion-input>
-    <ion-textarea class="paper"></ion-textarea>
+    <ion-input aria-label="Name of the poem" class="top"></ion-input>
+    <div class="paper">
+        <ion-textarea aria-label="Text of the poem" @keyup="updatePoem" :auto-grow="true"
+            v-model="poemText"></ion-textarea>
+    </div>
 </template>
+<script lang="ts">
+import { IonTextarea, IonInput } from '@ionic/vue'
+import { Preferences } from '@capacitor/preferences';
+import { ref } from 'vue';
+
+const poem = await Preferences.get({ key: 'poem' })
+console.log(poem.value)
+
+export default {
+    name: "PoemNotebook",
+    components: {
+        IonTextarea, IonInput
+    },
+    setup() {
+        const poemText = ref('');
+
+        const getPoemValueFromStorage = async () => {
+            const res = await Preferences.get({ key: 'poem' });
+            if (res.value !== null) {
+                poemText.value = res.value;
+            }
+        }
+
+        getPoemValueFromStorage();
+
+        const updatePoem = async (event: KeyboardEvent) => {
+            await Preferences.set({
+                key: 'poem',
+                value: (event.target as HTMLInputElement).value
+            });
+        };
+        return {
+            updatePoem,
+            poemText
+        }
+    }
+};
+</script>
 <style scoped>
 .top {
     width: 100%;
@@ -19,10 +60,11 @@
     background: repeating-linear-gradient(#F7F3EC, #F7F3EC 31px, #94ACD4 31px, #94ACD4 32px);
     box-shadow: 0 1px 1px #00000026, 0 10px 0 -5px #eee, 0 10px 1px -4px #00000026, 0 20px 0 -10px #eee, 0 20px 1px -9px #00000026;
     width: 100%;
-    padding: 35px;
-    line-height: 32px;
-    font-size: 22px;
+    height: fit-content;
+    padding: 0 35px 0 35px;
     position: relative;
-    height: 60vh;
+    margin-top: 0;
+    min-height: 60vh;
 }
+
 </style>
